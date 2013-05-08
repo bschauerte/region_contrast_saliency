@@ -1,18 +1,20 @@
+% @author B. Schauerte
+% @date   2012,2013
+
+%% define compiler options
 include_pathes = {'/usr/local/include/opencv/','/usr/local/include/'};
 lib_pathes     = {'/usr/local/lib/'};
 lib_names      = {'opencv_core','opencv_imgproc'};
-cpp_pathes     = {'region_saliency_mex.cpp','region_saliency.cpp','segment-image.cpp'};
+cpp_pathes     = {'region_saliency_mex.cpp','region_saliency.cpp','ext/segment-image.cpp'};
 ext_defines    = {'__MEX'};
 other_options  = {'-O'};
 
 % further settings
-arch=computer('arch'); % target architecture
-outdir='';
-outname='';
+arch    = computer('arch'); % target architecture
+outdir  = '';
+outname = '';
 
-%%%
-% create an options cell array as input for mex
-%%%
+%% create an options cell array as input for mex
 mex_options=cell(1,numel(include_pathes)+numel(lib_pathes)+numel(lib_names)+numel(cpp_pathes)+numel(ext_defines));
 c=1;
 
@@ -60,4 +62,5 @@ end
 
 mex_options = [other_options further_options mex_options];
 
+%% ... and compile
 mex(mex_options{:});

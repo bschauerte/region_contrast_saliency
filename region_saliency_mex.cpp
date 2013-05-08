@@ -1,3 +1,46 @@
+/**
+ * Copyright 2012 B. Schauerte. All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without 
+ * modification, are permitted provided that the following conditions are 
+ * met:
+ * 
+ *    1. Redistributions of source code must retain the above copyright 
+ *       notice, this list of conditions and the following disclaimer.
+ * 
+ *    2. Redistributions in binary form must reproduce the above copyright 
+ *       notice, this list of conditions and the following disclaimer in 
+ *       the documentation and/or other materials provided with the 
+ *       distribution.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY B. SCHAUERTE ''AS IS'' AND ANY EXPRESS OR 
+ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+ * DISCLAIMED. IN NO EVENT SHALL B. SCHAUERTE OR CONTRIBUTORS BE LIABLE 
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR 
+ * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, 
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+ * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *  
+ * The views and conclusions contained in the software and documentation
+ * are those of the authors and should not be interpreted as representing 
+ * official policies, either expressed or implied, of B. Schauerte.
+ */
+
+/**
+ * If you use any of this work in scientific research or as part of a larger
+ * software system, you are kindly requested to cite the use in any related 
+ * publications or technical documentation. The work is based upon:
+ *
+ * [1] B. Schauerte, R. Stiefelhagen, "How the Distribution of Salient 
+ *     Objects in Images Influences Salient Object Detection". In 
+ *     Proceedings of the 20th International Conference on Image Processing
+ *     (ICIP), 2013.
+ */
+
 #include "stdafx.h"
 #include "region_saliency.h"
 #include "ext/opencv_matlab.hpp"
@@ -21,7 +64,7 @@ _mexFunction(int nlhs, mxArray* plhs[],
   
   if (mxIsComplex(mimage))
     mexErrMsgTxt("Only real image data allowed.");
-  std::string method_s("FT");
+  std::string method_s("RC");
   if (nrhs > 1)
     method_s = std::string(mxArrayToString(prhs[1]));
 
@@ -33,11 +76,7 @@ _mexFunction(int nlhs, mxArray* plhs[],
   om::copyMatrixFromMatlab(image,ocvimage);
   // 2. calculate the saliency map
   cv::Mat ocvsaliency;
-  if (method_s == std::string("FT")) // Achanta "Frequency Tuned"
-    ocvsaliency = RegionSaliency::GetFT(ocvimage);
-  else if (method_s == std::string("SR")) // Hou "Spectral Residual"
-    ocvsaliency = RegionSaliency::GetSR(ocvimage);
-  else if (method_s == std::string("RC")) // Region Contrast
+  if (method_s == std::string("RC")) // Region Contrast
   {
     if (nrhs > 2)
     {
@@ -57,7 +96,7 @@ _mexFunction(int nlhs, mxArray* plhs[],
     if (nrhs > 2)
     {
       if (nrhs != 6)
-        mexErrMsgTxt("Wrong number of input arguments. Input arguments: image 'RC' sigmaDist segK segMinSize segSigma");
+        mexErrMsgTxt("Wrong number of input arguments. Input arguments: image 'RCNCC' sigmaDist segK segMinSize segSigma");
       double sigmaDist             = (double)mxGetScalar(prhs[2]);
       double segK                  = (double)mxGetScalar(prhs[3]);
       int segMinSize               = (int)mxGetScalar(prhs[4]);
@@ -67,12 +106,6 @@ _mexFunction(int nlhs, mxArray* plhs[],
     else
       ocvsaliency = RegionSaliency::GetRCNoColorConversion(ocvimage);
   }
-  else if (method_s == std::string("DRC")) // Debiased Region Contrast
-    ocvsaliency = RegionSaliency::GetRCDebiased(ocvimage);
-  else if (method_s == std::string("HC")) // Histogram Contrast
-    ocvsaliency = RegionSaliency::GetHC(ocvimage);
-  else if (method_s == std::string("LC")) // Luminance Contrast
-    ocvsaliency = RegionSaliency::GetLC(ocvimage);
   else if (method_s == std::string("RCCB")) // Region Contrast - Center-Biased
   {
     if (nrhs > 2)
@@ -91,24 +124,6 @@ _mexFunction(int nlhs, mxArray* plhs[],
     }
     else
       ocvsaliency = RegionSaliency::GetRCCB(ocvimage);
-  }
-  else if (method_s == std::string("DRCCB")) // Debiased Region Contrast - Center-Biased
-  {
-    if (nrhs > 2)
-    {
-      if (nrhs != 9)
-        mexErrMsgTxt("Wrong number of input arguments. Input arguments: image 'DRCCB' sigmaDist segK segMinSize segSigma centerBiasWeight centerBiasHeightSigma centerBiasWidthSigma");
-      double sigmaDist             = (double)mxGetScalar(prhs[2]);
-      double segK                  = (double)mxGetScalar(prhs[3]);
-      int segMinSize               = (int)mxGetScalar(prhs[4]);
-      double segSigma              = (double)mxGetScalar(prhs[5]);
-      double centerBiasWeight      = (double)mxGetScalar(prhs[6]);
-      double centerBiasHeightSigma = (double)mxGetScalar(prhs[7]);
-      double centerBiasWidthSigma  = (double)mxGetScalar(prhs[8]);
-      ocvsaliency = RegionSaliency::GetRCCBDebiased(ocvimage,sigmaDist,segK,segMinSize,segSigma,centerBiasWeight,centerBiasHeightSigma,centerBiasWidthSigma);
-    }
-    else
-      ocvsaliency = RegionSaliency::GetRCCBDebiased(ocvimage);
   }
   else if (method_s == std::string("LDRC")) // Locally Debiased Region Contrast
   {
@@ -130,7 +145,7 @@ _mexFunction(int nlhs, mxArray* plhs[],
     if (nrhs > 2)
     {
       if (nrhs != 10)
-        mexErrMsgTxt("Wrong number of input arguments. Input arguments: image 'DRCCB' sigmaDist segK segMinSize segSigma centerBiasWeight centerBiasHeightSigma centerBiasWidthSigma centerBiasCombinationTypeID");
+        mexErrMsgTxt("Wrong number of input arguments. Input arguments: image 'LDRCCB' sigmaDist segK segMinSize segSigma centerBiasWeight centerBiasHeightSigma centerBiasWidthSigma centerBiasCombinationTypeID");
       double sigmaDist             = (double)mxGetScalar(prhs[2]);
       double segK                  = (double)mxGetScalar(prhs[3]);
       int segMinSize               = (int)mxGetScalar(prhs[4]);
@@ -166,7 +181,6 @@ mexFunction(int nlhs, mxArray* plhs[],
             int nrhs, const mxArray* prhs[])
 {
   // check number of input parameters
-  //if (nrhs < 1 || nrhs > 2)
   if (nrhs < 1)
     mexErrMsgTxt("Wrong number of input arguments. Input arguments: image [method] [... method parameters ...]");
 

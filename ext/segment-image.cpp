@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "../stdafx.h"
 
 #include "segment-graph.h"
 #include "segment-image.h"
