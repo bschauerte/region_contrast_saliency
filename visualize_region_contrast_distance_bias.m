@@ -13,6 +13,13 @@
 % @author B. Schauerte
 % @date   2012,2013
 
+if ~exist('segment_weight_sums.txt')
+  fprintf('Downloading data. Please wait ... ');
+  %urlwrite('https://cvhci.anthropomatik.kit.edu/~bschauer/datasets/segment_weight_sums.txt')
+  unzip('https://cvhci.anthropomatik.kit.edu/~bschauer/datasets/segment_weight_sums.txt.zip')
+  fprintf('done\n');
+end
+
 a=load('segment_weight_sums.txt');
   % Segment_weight_sums.txt contains the summed region weights, i.e.
   %  \forall r_k : \sum_{r_i}\hat{D}_s(r_k;r_i)
@@ -35,7 +42,7 @@ for i=1:size(locs,1)
 end
 
 norm_weight_grid = weight_grid ./ (num_grid + 1);
-figure('name','Mean Weight Sums'), imshow(mat2gray(norm_weight_grid));
+subplot(1,2,1); imshow(mat2gray(norm_weight_grid)); title('Mean Weight Sums');
 
 %% Visualize the expected, theoretical weight bias
 M=grid_size;
@@ -52,4 +59,4 @@ for i=1:M
   end
 end
 
-figure('name','Regular Grid Weight Sum'), imshow(mat2gray(DGS));
+subplot(1,2,2); imshow(mat2gray(DGS)); title('Regular Grid Weight Sum');
