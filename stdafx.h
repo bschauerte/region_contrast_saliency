@@ -13,14 +13,13 @@
 #include <algorithm>
 #include <time.h>
 #include <queue>
-#include <omp.h>
 using namespace std;
 
 // OpenCV
-#include <cvaux.h>
-#include <highgui.h>
+#include <opencv2/opencv.hpp>
 using namespace cv;
 
+// segmentation
 #include "ext/segment-image.h"
 
 template<typename T> inline T sqr(T x) { return x * x;}
