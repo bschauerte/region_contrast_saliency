@@ -3,7 +3,7 @@
 
 %% define compiler options
 include_pathes = {'/usr/local/include/opencv/','/usr/local/include/'};
-lib_pathes     = {'/usr/local/lib/'};
+lib_pathes     = {};
 lib_names      = {'opencv_core','opencv_imgproc'};
 cpp_pathes     = {'region_saliency_mex.cpp','region_saliency.cpp','ext/segment-image.cpp'};
 ext_defines    = {'__MEX'};

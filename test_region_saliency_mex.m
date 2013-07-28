@@ -25,12 +25,12 @@ f_cbctids_idx = @(s) (sum(strcmp(s,{'CB_LINEAR','CB_PRODUCT','CB_MAX','CB_MIN'})
 smethods = { ...
     {'RC'} ...   % Region Contrast
     {'LDRC'} ... % Locally Debiased Region Contrast
-    ... % in the following, LCRF with an added/multiplied/min'ed/max'ed center bias 
+    ... % in the following, LDRC with an added/multiplied/min'ed/max'ed center bias
     {'LDRCCB',0.5,50,50,0.5,0.5,0.5,0.5,f_cbctids_idx('CB_PRODUCT')} ...
     {'LDRCCB',0.5,50,50,0.5,0.5,0.5,0.5,f_cbctids_idx('CB_LINEAR')} ...
     {'LDRCCB',0.5,50,50,0.5,0.5,0.5,0.5,f_cbctids_idx('CB_MIN')} ...
     {'LDRCCB',0.5,50,50,0.5,0.5,0.5,0.5,f_cbctids_idx('CB_MAX')} ...
-  };
+    };
 nmethods = numel(smethods);
 
 %% calculate the saliency maps for all methods
@@ -38,23 +38,45 @@ img_dir = 'examples';
 files   = dir(fullfile(img_dir,'*.jpg'));
 diffs   = zeros(nmethods,nmethods,length(files));
 figure('name','image');
-for i=1:length(files)
-  I_path=fullfile(img_dir,files(i).name);
-  
-  I=imread(I_path);
-  I_orig=I;
-  I=imresize(I,[400 NaN]);
-  IS=im2single(I);
+for i = 1:length(files)
+    I_path = fullfile(img_dir,files(i).name);
+    
+    I      = imread(I_path);
+    I_orig = I;
+    I      = imresize(I,[400 NaN]);
+    IS     = im2single(I);
+    
+    smaps  = cell(1,numel(smethods));
+    
+    subplot(3,ceil((nmethods+1)/3),1); imshow(I)
+    for m=1:nmethods
+        tic;
+        S=region_saliency_mex(IS,smethods{m}{:});
+        t=toc;
+        subplot(3,ceil((nmethods+1)/3),1+m); imshow(mat2gray(S)); colormap hot; title([smethods{m}{1} ' (' num2str(t) ')']);
+        smaps{m}=S;
+    end
+    drawnow;
+end
 
-  smaps=cell(1,numel(smethods));
-  
-  subplot(3,ceil((nmethods+1)/3),1); imshow(I)
-  for m=1:nmethods
-    tic;
-    S=region_saliency_mex(IS,smethods{m}{:});
-    t=toc;
-    subplot(3,ceil((nmethods+1)/3),1+m); imshow(mat2gray(S)); colormap hot; title([smethods{m}{1} ' (' num2str(t) ')']);
-    smaps{m}=S;
-  end
-  drawnow;
+%% visualize differences
+do_visualize_differences = true;
+
+if do_visualize_differences
+    for i = 1 %:length(files) % @note: change this if you want to visualize different/more images
+        I_path = fullfile(img_dir,files(i).name);
+        I_orig = I;
+        I      = imresize(I,[400 NaN]);
+        
+        for m = 1:nmethods
+            for n = 1:nmethods
+                subplot(nmethods,nmethods,(m-1)*nmethods + n); 
+                if m == n
+                    imshow(I);
+                else
+                    imshow(mat2gray(smaps{m} - smaps{n})); colormap hot; title([smethods{m}{1} ' vs '  smethods{n}{1}]);
+                end
+            end
+        end
+    end
 end
