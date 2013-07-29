@@ -21,6 +21,16 @@ publications or technical documentation. The work is based upon:
     B. Schauerte, R. Stiefelhagen, "How the Distribution of Salient Objects 
     in Images Influences Salient Object Detection". In Proceedings of the 
     20th International Conference on Image Processing (ICIP), 2013.
+    
+### Applications
+
+We applied the region contrast algorithm to learn better attribute (color 
+term) models from [images collected from the Web](https://cvhci.anthropomatik.kit.edu/~bschauer/datasets/google-512/) 
+by focusing on the salient object, see
+
+    B. Schauerte, R. Stiefelhagen, "Learning Robust Color Name Models from 
+    Web Images". In Proceedings of the 21st International Conference on 
+    Pattern Recognition (ICPR), 2012
 
 ## 2. COMPILING
 
