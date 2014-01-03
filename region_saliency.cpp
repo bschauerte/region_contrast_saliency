@@ -469,7 +469,10 @@ int RegionSaliency::Quantize(const Mat& img3f, Mat &idx1i, Mat &_color3f, Mat &_
 		}
 	}
 	for (int i = 0; i < _color3f.cols; i++)
- 		color[i] /= (float)colorNum[i];
+  {
+    color[i] *= (1.0f/((float)colorNum[i]));
+ 		//color[i] /= ((float)colorNum[i]); // original code that caused trouble with newer versions; it seems like the division operator is ill defined
+  }
 
 	return _color3f.cols;
 }
