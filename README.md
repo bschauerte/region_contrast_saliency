@@ -32,7 +32,7 @@ by focusing on the salient object, see
     Web Images". In Proceedings of the 21st International Conference on 
     Pattern Recognition (ICPR), 2012
 
-Furthermore, it has been applied in:
+Furthermore, the debiased region contrast has been applied in:
 
     Schauerte, R. Stiefelhagen, "Look at this! Learning to Guide Visual 
     Saliency in Human-Robot Interaction". In Proceedings of the 
