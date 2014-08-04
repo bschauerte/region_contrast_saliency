@@ -32,6 +32,12 @@ by focusing on the salient object, see
     Web Images". In Proceedings of the 21st International Conference on 
     Pattern Recognition (ICPR), 2012
 
+Furthermore, it has been applied in:
+
+    Schauerte, R. Stiefelhagen, "Look at this! Learning to Guide Visual 
+    Saliency in Human-Robot Interaction". In Proceedings of the 
+    International Conference on Intelligent Robots and Systems (IROS), 2014.
+
 ## 2. COMPILING
 
 The code can be compiled using the *build.m* script. However, tt might be 
